@@ -1,18 +1,18 @@
 [
   {
-    "Name": "example1.example.com.", 
-    "Type": "CNAME", 
-    "SetIdentifier": "example1", 
-    "Weight": 100, 
-    "TTL": 300, 
+    "Name": "example1.example.com.",
+    "Type": "CNAME",
+    "SetIdentifier": "example1",
+    "Weight": 100,
+    "TTL": 300,
     "ResourceRecords": [{"Value": "example.com"}]
   }, 
   {
-    "Name": "example2.example.com.", 
-    "Type": "CNAME", 
-    "SetIdentifier": "example2", 
-    "Weight": 200, 
-    "TTL": 300, 
+    "Name": "example2.example.com.",
+    "Type": "CNAME",
+    "SetIdentifier": "example2",
+    "Weight": 200,
+    "TTL": 300,
     "ResourceRecords": [{"Value": "example.com"}]
   }
 ]

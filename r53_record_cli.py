@@ -96,9 +96,9 @@ class Display(Console):
             else:
                 color = Color.from_ansi(bgcolors[1])
             table.add_row(*row_values, style=Style(bgcolor=color))
-            
+
             count += 1
-    
+
         return table
 
     def new_screen(self):
@@ -147,8 +147,7 @@ class Record:
         try:
             updated_record.pop("updated_data")
         except NameError:
-            pass
-        
+            pass 
 
         return updated_record
 
@@ -259,7 +258,7 @@ class RecordSet:
                 else:
                     return "\n[red] Error updating records! \n {0}".format(resp)
                     os.system('read -s -n 1 -p "Press any key to continue..."')
-                    
+
             except Exception as e:
                 return "\n[red]Error updating records: \n {0}".format(e)
                 os.system('read -s -n 1 -p "Press any key to continue..."')
