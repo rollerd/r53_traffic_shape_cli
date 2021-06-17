@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+
+import argparse
 import boto3
 from botocore.exceptions import ClientError
 import json
@@ -96,9 +99,9 @@ class Display(Console):
             else:
                 color = Color.from_ansi(bgcolors[1])
             table.add_row(*row_values, style=Style(bgcolor=color))
-
+            
             count += 1
-
+    
         return table
 
     def new_screen(self):
@@ -147,7 +150,8 @@ class Record:
         try:
             updated_record.pop("updated_data")
         except NameError:
-            pass 
+            pass
+        
 
         return updated_record
 
@@ -254,14 +258,14 @@ class RecordSet:
                         record.reset()
                     return "\n[green] Records Updated!"
                     recordset.refresh_records()
-                    os.system('read -s -n 1 -p "Press any key to continue..."')
+                    input("Press 'Enter' to continue...")
                 else:
                     return "\n[red] Error updating records! \n {0}".format(resp)
-                    os.system('read -s -n 1 -p "Press any key to continue..."')
-
+                    input("Press 'Enter' to continue...")
+                    
             except Exception as e:
                 return "\n[red]Error updating records: \n {0}".format(e)
-                os.system('read -s -n 1 -p "Press any key to continue..."')
+                input("Press 'Enter' to continue...")
 
 
 def load_changeset_from_file(recordset):
@@ -383,12 +387,12 @@ def get_staged_changes_view(recordset):
         update_table = display.create_table(updated_records, "weighted", updated_records=True, bgcolors=[70,70])
 
         display.split_display(orig_table, update_table)
-        os.system('read -s -n 1 -p "Press any key to continue..."')
+        input("Press 'Enter' to continue...")
         display.end_screen()
 
     else:
         display.update_screen("\n[yellow]No Changes Staged")
-        os.system('read -s -n 1 -p "Press any key to continue..."')
+        input("Press 'Enter' to continue...")
         display.end_screen()
 
 
@@ -401,7 +405,7 @@ def edit_staged_changes(recordset):
         display.split_display(orig_table, update_table)
         while True:
             if len(updated_records) == 0:
-                os.system('read -s -n 1 -p "No more records staged. Press any key to continue..."')
+                input("Press 'Enter' to continue...")
                 break
             else:
                 delete_choice = Prompt.ask("Select an index to delete from staged changes. 'q' to exit")
@@ -430,7 +434,7 @@ def edit_staged_changes(recordset):
 
     else:
         display.update_screen("\n[yellow]No Changes Staged")
-        os.system('read -s -n 1 -p "Press any key to continue..."')
+        input("Press 'Enter' to continue...")
         display.end_screen()
 
 
@@ -445,7 +449,7 @@ def update_records(recordset):
         if Confirm.ask("[green]Are you sure you want to apply these changes?"):
             resp = recordset.write_records()
             display.update_screen(resp)
-            os.system('read -s -n 1 -p "Press any key to continue..."')
+            input("Press 'Enter' to continue...")
             display.end_screen()
         else:
             display.update_screen("\n[yellow]Cancelling Apply")
@@ -453,7 +457,7 @@ def update_records(recordset):
             display.end_screen()
     else:
         display.update_screen("\n[yellow]No records staged for updating")
-        os.system('read -s -n 1 -p "Press any key to continue..."')
+        input("Press 'Enter' to continue...")
         display.end_screen()
 
 
@@ -463,8 +467,8 @@ def dump_changesets(recordset):
         changeset_filename = Prompt.ask("\n[blue]Enter a filename to write changesets to (will create new and original records in two files)")
         recordset.dump_changeset(changeset_filename)
     else:
-        display.update_screen("\n[yellow]No records staged for updating")
-        os.system('read -s -n 1 -p "Press any key to continue..."')
+        display.update_screen("\n[yellow]No records staged. Stage some changes and then try again")
+        input("Press 'Enter' to continue...")
         display.end_screen()
 
 
@@ -505,6 +509,13 @@ def confirm_quit(recordset):
             sys.exit(0)
     else:
         sys.exit(0)
+
+
+def unattended_apply(recordset, filename):
+    load_records(recordset, filename)
+    recordset.write_records()
+    sys.exit(0)
+
 
 
 def main():
@@ -567,5 +578,17 @@ def main():
     display.end_screen()
 
 if __name__=="__main__":
+    parser = argparse.ArgumentParser(description="Edit AWS R53 records")
+    parser.add_argument("-f", metavar="changeset_file", dest="changeset_file", required=False, help="Name of changeset file to apply")
+
+    args = parser.parse_args()
+
+    changeset_file = args.changeset_file
+
+    if changeset_file:
+        display = Display()
+        recordset = RecordSet()
+        unattended_apply(recordset, changeset_file)
+
     display = Display()
     main()
