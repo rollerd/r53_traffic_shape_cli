@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  mta:
+    image: <docker-image-here>
+    environment:
+      - AWS_PROFILE=saml
+      - LANG=C.UTF-8
+      - COLORTERM=truecolor
+      - TERM=screen-256color
+      - PAGER=less -r
+    working_dir: /r53cli
+    volumes:
+      - "$HOME/.aws:/root/.aws"
+    command: /bin/bash
+
